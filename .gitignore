@@ -11,3 +11,5 @@ build/
 *.metadata.json
 .system_generated/
 
+.github/
+
