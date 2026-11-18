@@ -13,3 +13,5 @@ build/
 
 .github/
 
+.vercel
+.env*
