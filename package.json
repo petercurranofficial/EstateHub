@@ -27,7 +27,7 @@
     "next-auth": "4.24.7",
     "bcryptjs": "2.4.3",
     "cloudinary": "1.41.0",
-    "lucide-react": "0.388.0",
+    "lucide-react": "^0.380.0",
     "tailwindcss": "3.4.3",
     "@tailwindcss/forms": "0.5.7",
     "postcss": "8.4.41",
