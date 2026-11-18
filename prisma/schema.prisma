@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  role         String   // e.g., 'admin', 'agent'
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  Agent        Agent?
+}
+
+model Agent {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  name        String
+  photoUrl    String?
+  phone       String?
+  email       String?
+  active      Boolean  @default(true)
+  properties  Property[]
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Property {
+  id               Int      @id @default(autoincrement())
+  title            String
+  slug             String   @unique
+  description      String?
+  price            Decimal
+  listingType      String   // 'sale' or 'rent'
+  propertyType     String   // e.g., 'Apartment', 'Villa'
+  bedrooms         Int
+  bathrooms        Int
+  builtUpArea      Float?
+  carpetArea       Float?
+  furnishing       String?
+  status           String   // 'available', 'sold', 'rented'
+  featured         Boolean  @default(false)
+  locationId       Int
+  agentId          Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  location         Location @relation(fields: [locationId], references: [id])
+  images           PropertyImage[]
+  amenities        PropertyAmenity[]
+  agent            Agent?   @relation(fields: [agentId], references: [id])
+  enquiries        Enquiry[]
+}
+
+model PropertyImage {
+  id         Int      @id @default(autoincrement())
+  url        String
+  publicId   String?
+  propertyId Int
+  property   Property @relation(fields: [propertyId], references: [id])
+}
+
+model Location {
+  id        Int      @id @default(autoincrement())
+  city      String
+  state     String
+  country   String @default("India")
+  properties Property[]
+}
+
+model Amenity {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  properties PropertyAmenity[]
+}
+
+model PropertyAmenity {
+  propertyId Int
+  amenityId  Int
+  property   Property @relation(fields: [propertyId], references: [id])
+  amenity    Amenity  @relation(fields: [amenityId], references: [id])
+  @@id([propertyId, amenityId])
+}
+
+model Enquiry {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String
+  phone       String?
+  message     String?
+  contactMethod String?
+  status      String   @default("New")
+  propertyId  Int
+  property    Property @relation(fields: [propertyId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BlogPost {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  content     String   @default("")
+  excerpt     String?
+  coverImage  String?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  authorId    Int?
+  author      User?    @relation(fields: [authorId], references: [id])
+  categories  BlogCategory[]
+}
+
+model BlogCategory {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  posts     BlogPost[] @relation("BlogPostCategories")
+}
+
+model WebsiteSetting {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  value       String?
+}
